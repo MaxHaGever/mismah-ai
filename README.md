@@ -10,8 +10,6 @@ I started this project as a practical full-stack product: authentication, onboar
 
 After building the base myself, I continued developing it with Codex as a way to gain hands-on experience working with AI coding tools, agent-style workflows, and prompt-guided product iteration. I used that process to expand the app beyond a simple prototype: refining UX flows, adding admin controls, improving AI prompt structure, building new document types, and preparing the project for real deployment.
 
-I'm keeping that note here intentionally. Part of what this project demonstrates is not only that I can build a working app, but that I can collaborate effectively with modern AI development tools while still owning the product decisions, architecture, testing, and implementation direction.
-
 ## Product Highlights
 
 - Hebrew-first PDF creation with right-to-left document templates.
