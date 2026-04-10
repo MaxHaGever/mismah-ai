@@ -1,125 +1,71 @@
 # Mismah AI
 
-Mismah AI is a full-stack web app for creating Hebrew leak-detection PDF reports with AI. It lets a business set its company details and logo, generate polished client-ready documents, and manage customer access through an admin panel.
+Mismah AI is a full-stack Hebrew document-generation platform for small service businesses. The app helps a professional turn field notes, photos, company branding, and structured report requirements into polished client-ready PDF documents.
 
-## What It Does
+The current version focuses on inspection and service workflows such as leak-detection reports, price quotes, and technician visit summaries.
 
-- creates local and Google-based user accounts
-- stores company details and branding
-- generates Hebrew leak-detection PDFs with AI
-- tracks generated reports per user
-- supports admin review of users, prompts, PDFs, and monthly document quotas
+## Why I Built It
+
+I started this project as a practical full-stack product: authentication, onboarding, company profiles, file uploads, MongoDB persistence, and PDF generation.
+
+After building the base myself, I continued developing it with Codex as a way to gain hands-on experience working with AI coding tools, agent-style workflows, and prompt-guided product iteration. I used that process to expand the app beyond a simple prototype: refining UX flows, adding admin controls, improving AI prompt structure, building new document types, and preparing the project for real deployment.
+
+I'm keeping that note here intentionally. Part of what this project demonstrates is not only that I can build a working app, but that I can collaborate effectively with modern AI development tools while still owning the product decisions, architecture, testing, and implementation direction.
+
+## Product Highlights
+
+- Hebrew-first PDF creation with right-to-left document templates.
+- AI-assisted report generation from natural field notes.
+- Keyword-guided prompt coverage so users can see which required report details were included.
+- Company profile setup with logo and business details.
+- Upload support for up to five report photos with optional descriptions.
+- Multiple document types, including leak detection, price quotes, and technician visit summaries.
+- Google login support alongside manually managed client accounts.
+- Admin dashboard for reviewing users, generated reports, prompts, PDFs, and monthly document quotas.
+- Monthly document limits per account, currently designed around a portfolio/demo SaaS-style flow.
 
 ## Tech Stack
 
-- Frontend: React, TypeScript, Vite, Tailwind
-- Backend: Node.js, Express, TypeScript, MongoDB, Mongoose
-- PDF generation: EJS templates + Puppeteer
+- Frontend: React, TypeScript, Vite, Tailwind CSS
+- Backend: Node.js, Express, TypeScript
+- Database: MongoDB with Mongoose
 - AI: OpenAI API
-- Deployment: Docker Compose
+- PDF generation: EJS templates rendered through Puppeteer
+- Auth: JWT, Google Identity support
+- Deployment shape: Docker Compose, with planned AWS EC2 and MongoDB Atlas hosting
 
-## Authorship Note
+## What I Focused On
 
-The original base application was built by me.
-
-This repository was then extended together with Codex as a practical learning project focused on:
-- working with AI-assisted development
-- iterating with agent-style workflows
-- improving prompts, UX, and deployment readiness
-
-I keep this note in the repo intentionally because part of the value of the project is showing how I collaborate with AI tools to ship and refine real software, not just to generate isolated snippets.
+- Building a complete product flow rather than isolated screens.
+- Designing Hebrew RTL PDFs that feel closer to client-facing business documents than raw AI output.
+- Connecting frontend keyword guidance with backend prompt generation.
+- Adding admin visibility so the project behaves more like a real internal tool.
+- Keeping secrets, uploads, and environment-specific files out of the public repository.
+- Learning how to use AI coding assistants responsibly: reviewing changes, tightening scope, iterating on UX, and validating with builds.
 
 ## Local Development
 
-For local development, copy the backend example env file and fill in real values:
+This repository is public-safe and does not include real environment secrets. To run it locally, create environment files from the examples and provide your own MongoDB, OpenAI, JWT, and optional Google/SMTP values.
 
 ```bash
 cp backend/.env.example backend/.env
-```
-
-Minimum required values in `backend/.env`:
-
-- `MONGODB_URI`
-- `JWT_SECRET`
-- `FRONTEND_URL`
-- `OPENAI_API_KEY`
-
-Recommended:
-
-- `ADMIN_EMAILS=your@email.com`
-- `ALLOWED_ORIGIN=http://localhost`
-
-If you plan to use Google login:
-
-- set `GOOGLE_CLIENT_ID` in `backend/.env`
-- set `VITE_GOOGLE_CLIENT_ID` in `frontend/.env`
-
-## Run Locally With Docker
-
-From the repo root:
-
-```bash
 docker compose up --build
 ```
 
-Local app URL:
+The local app runs at:
 
-- `http://localhost`
-
-## First-Time Flow
-
-1. Log in with Google or create a user manually as admin.
-2. Accept terms.
-3. Fill in company details.
-4. Upload a logo if needed.
-5. Generate a leak-detection PDF from the dashboard.
-
-If your account is admin, you can also open the admin dashboard and:
-- invite users
-- view prompts and generated PDFs
-- see monthly usage
-- adjust each user’s monthly document limit
-
-## OpenAI API Key
-
-AI PDF generation requires a valid OpenAI API key in `backend/.env`:
-
-```env
-OPENAI_API_KEY=sk-...
+```txt
+http://localhost
 ```
 
-## Production Deployment
+## Project Status
 
-This repository is prepared for a single-domain deployment on AWS EC2 with Docker Compose:
+This is an active portfolio project. The next planned step is deployment to `mismah.co.il` using AWS for hosting and MongoDB Atlas for the production database.
 
-- `https://mismah.co.il` serves the frontend
-- `/api` proxies to the backend
-- `/uploads` serves generated PDFs and uploaded assets
-- MongoDB is intended to run on MongoDB Atlas
+Future improvements I would like to explore:
 
-For the full deployment flow, see [DEPLOYMENT.md](/Users/maxspector/Desktop/Projects/Graveyard/pdf-ai-fullstack/DEPLOYMENT.md).
-
-## Development Checks
-
-Backend:
-
-```bash
-cd backend
-npm run build
-```
-
-Frontend:
-
-```bash
-cd frontend
-npm run build
-```
-
-## Before Publishing This Repo
-
-Before pushing to GitHub:
-
-- make sure real secrets are not committed
-- keep `backend/.env` and `frontend/.env` local only
-- avoid pushing generated PDFs, logos, or uploads
-- rotate any credentials that may have been exposed during development
+- S3-based upload storage.
+- CI/CD deployment flow.
+- More robust report history and PDF preview tooling.
+- Additional business document templates.
+- Stronger observability and production monitoring.
