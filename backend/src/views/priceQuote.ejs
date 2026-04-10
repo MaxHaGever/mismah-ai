@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page { margin: 24px 28px; }
+    :root {
+      --ink: #1f1607;
+      --muted: #7c6a53;
+      --line: #ead8b7;
+      --paper: #fffaf1;
+      --panel: #fff7e6;
+      --accent: #b45309;
+      --accent-dark: #78350f;
+      --gold: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      direction: rtl;
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      color: var(--ink);
+      background: #fffdf8;
+      line-height: 1.55;
+    }
+    .document {
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .hero {
+      padding: 28px 30px;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.22), transparent 26%),
+        linear-gradient(135deg, #3b2407 0%, #7c2d12 48%, #f59e0b 100%);
+      color: #fffaf0;
+    }
+    .brand { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
+    .logo { max-height: 72px; max-width: 180px; object-fit: contain; padding: 8px; border-radius: 16px; background: rgba(255,255,255,0.88); }
+    .company h2 { margin: 0 0 7px; font-size: 20px; }
+    .company p { margin: 0; color: rgba(255, 250, 240, 0.76); font-size: 11px; }
+    .quote-mark {
+      display: inline-block;
+      margin-top: 26px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: #fde68a;
+      font-weight: 800;
+    }
+    h1 { margin: 12px 0 8px; font-size: 34px; line-height: 1.1; }
+    .lead { margin: 0; max-width: 620px; color: rgba(255, 250, 240, 0.84); font-size: 13px; }
+    .content { padding: 22px 26px 28px; }
+    .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 18px; padding: 13px; background: var(--paper); break-inside: avoid; }
+    .label { display: block; color: var(--muted); font-size: 10px; margin-bottom: 5px; }
+    .value { font-weight: 900; font-size: 12px; color: var(--ink); }
+    .section { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; margin-top: 14px; break-inside: avoid; background: #fff; }
+    .section h2 { margin: 0; padding: 13px 16px; background: var(--panel); color: var(--accent-dark); font-size: 15px; }
+    .body { padding: 15px 16px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid #f1e3ca; text-align: right; }
+    th { color: var(--accent-dark); background: #fff3d8; font-weight: 900; }
+    tr:last-child td { border-bottom: none; }
+    .total-strip {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #431407, #92400e);
+      color: #fff7ed;
+    }
+    .total-label { font-size: 12px; color: #fed7aa; }
+    .total-value { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
+    ul { margin: 0; padding: 0 18px 0 0; }
+    li { margin: 0 0 8px; }
+    .muted { margin: 0; color: var(--muted); font-size: 11px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .photo-card { break-inside: avoid; }
+    .photo-card img { width: 100%; height: 190px; object-fit: cover; border-radius: 16px; border: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <div class="hero">
+      <div class="brand">
+        <div class="company">
+          <h2><%= data.companyName || 'שם החברה' %></h2>
+          <p><%= [data.companyAddress, data.companyPhone, data.companyEmail, data.companyWebsite].filter(Boolean).join(' · ') %></p>
+        </div>
+        <% if (header.logoUrl) { %><img src="<%= header.logoUrl %>" class="logo" /><% } %>
+      </div>
+      <span class="quote-mark">COMMERCIAL PROPOSAL</span>
+      <h1><%= data.documentTitle || 'הצעת מחיר' %></h1>
+      <p class="lead"><%= data.subject || data.summary || 'הצעת מחיר ללקוח' %></p>
+    </div>
+
+    <div class="content">
+      <div class="meta">
+        <div class="card"><span class="label">לקוח</span><span class="value"><%= data.clientName || '—' %></span></div>
+        <div class="card"><span class="label">כתובת</span><span class="value"><%= data.clientAddress || '—' %></span></div>
+        <div class="card"><span class="label">תאריך</span><span class="value"><%= formatHebrewDate(data.issueDate) %></span></div>
+        <div class="card"><span class="label">בתוקף עד</span><span class="value"><%= data.validUntil ? formatHebrewDate(data.validUntil) : '—' %></span></div>
+      </div>
+
+      <% if (data.summary) { %>
+        <section class="section"><h2>תיאור העבודה</h2><div class="body"><%= data.summary %></div></section>
+      <% } %>
+
+      <section class="section">
+        <h2>פירוט הצעה</h2>
+        <div class="body">
+          <table>
+            <thead><tr><th>תיאור</th><th>כמות</th><th>מחיר יחידה</th><th>סה"כ</th></tr></thead>
+            <tbody>
+              <% (data.items || []).forEach((item) => { %>
+                <tr>
+                  <td><%= item.description || '' %></td>
+                  <td><%= item.quantity || '' %></td>
+                  <td><%= item.unitPrice || '' %></td>
+                  <td><%= item.total || '' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <% if (data.total) { %>
+            <div class="total-strip">
+              <span class="total-label">סה"כ לתשלום</span>
+              <span class="total-value"><%= data.total %> ₪</span>
+            </div>
+          <% } %>
+        </div>
+      </section>
+
+      <% if (data.terms?.length) { %>
+        <section class="section"><h2>תנאים</h2><div class="body"><ul><% data.terms.forEach((term) => { %><li><%= term %></li><% }) %></ul></div></section>
+      <% } %>
+
+      <% if (data.notes) { %>
+        <section class="section"><h2>הערות</h2><div class="body"><%= data.notes %></div></section>
+      <% } %>
+
+      <% if (optional.images?.length) { %>
+        <section class="section">
+          <h2>תמונות מצורפות</h2>
+          <div class="body photo-grid">
+            <% optional.images.forEach((image, index) => { %>
+              <div class="photo-card">
+                <img src="<%= image.url %>" />
+                <p class="muted" style="margin-top:6px;"><%= image.description || `תמונה ${index + 1}` %></p>
+              </div>
+            <% }) %>
+          </div>
+        </section>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

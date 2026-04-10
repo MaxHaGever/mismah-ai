@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page { margin: 24px 28px; }
+    :root {
+      --ink: #101827;
+      --muted: #64748b;
+      --line: #d7e1ee;
+      --panel: #f1f7fd;
+      --panel-strong: #e2edf8;
+      --accent: #0f766e;
+      --accent-dark: #134e4a;
+      --slate: #1e293b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      direction: rtl;
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      color: var(--ink);
+      background: #ffffff;
+      line-height: 1.55;
+    }
+    .topline { height: 8px; border-radius: 999px; background: linear-gradient(90deg, #0f766e, #38bdf8, #1e293b); margin-bottom: 18px; }
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(255, 255, 255, 0.98) 48%, rgba(30, 41, 59, 0.08));
+      margin-bottom: 16px;
+    }
+    .brand { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+    .logo { max-height: 70px; max-width: 180px; object-fit: contain; padding: 8px; border-radius: 16px; background: #fff; border: 1px solid var(--line); }
+    .company h2 { margin: 0 0 6px; font-size: 19px; }
+    .company p, .muted { margin: 0; color: var(--muted); font-size: 11px; }
+    .badge { display: inline-block; margin-top: 24px; border-radius: 999px; padding: 6px 12px; background: var(--accent-dark); color: #ccfbf1; font-size: 10px; font-weight: 900; letter-spacing: 0.14em; }
+    h1 { margin: 12px 0 8px; font-size: 32px; line-height: 1.12; color: var(--slate); }
+    .lead { margin: 0; max-width: 660px; color: #475569; font-size: 13px; }
+    .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; }
+    .card { border: 1px solid var(--line); border-radius: 18px; padding: 13px; background: #fff; break-inside: avoid; }
+    .label { display: block; color: var(--muted); font-size: 10px; margin-bottom: 5px; }
+    .value { font-weight: 900; font-size: 12px; color: var(--slate); }
+    .summary-card { border-radius: 20px; padding: 18px; background: var(--slate); color: #f8fafc; margin: 16px 0; break-inside: avoid; }
+    .summary-card h2 { margin: 0 0 8px; font-size: 15px; color: #ccfbf1; }
+    .summary-card p { margin: 0; font-size: 12px; color: #e2e8f0; }
+    .section { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-top: 14px; break-inside: avoid; background: #fff; }
+    .section h2 { margin: 0; padding: 12px 16px; background: var(--panel-strong); color: var(--accent-dark); font-size: 15px; }
+    .body { padding: 15px 16px; font-size: 12px; }
+    .timeline { margin: 0; padding: 0; list-style: none; }
+    .timeline li { position: relative; margin: 0 0 10px; padding: 10px 34px 10px 12px; border: 1px solid #e2e8f0; border-radius: 14px; background: #f8fafc; }
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 15px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px #ccfbf1;
+    }
+    .block-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .photo-card { break-inside: avoid; }
+    .photo-card img { width: 100%; height: 190px; object-fit: cover; border-radius: 16px; border: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <div class="hero">
+    <div class="brand">
+      <div class="company">
+        <h2><%= data.companyName || 'שם החברה' %></h2>
+        <p><%= [data.companyAddress, data.companyPhone, data.companyEmail, data.companyWebsite].filter(Boolean).join(' · ') %></p>
+      </div>
+      <% if (header.logoUrl) { %><img src="<%= header.logoUrl %>" class="logo" /><% } %>
+    </div>
+    <span class="badge">FIELD SERVICE REPORT</span>
+    <h1><%= data.documentTitle || 'סיכום ביקור טכנאי' %></h1>
+    <p class="lead"><%= data.subject || data.summary || 'סיכום ביקור ושירות ללקוח' %></p>
+  </div>
+
+  <div class="meta">
+    <div class="card"><span class="label">לקוח</span><span class="value"><%= data.clientName || '—' %></span></div>
+    <div class="card"><span class="label">כתובת</span><span class="value"><%= data.clientAddress || '—' %></span></div>
+    <div class="card"><span class="label">טכנאי</span><span class="value"><%= data.technicianName || '—' %></span></div>
+    <div class="card"><span class="label">תאריך ביקור</span><span class="value"><%= formatHebrewDate(data.visitDate) %></span></div>
+  </div>
+
+  <% if (data.summary) { %>
+    <section class="summary-card">
+      <h2>סיכום כללי</h2>
+      <p><%= data.summary %></p>
+    </section>
+  <% } %>
+
+  <% const blocks = [
+    ['עבודה שבוצעה', data.workPerformed],
+    ['ממצאים', data.findings],
+    ['המלצות', data.recommendations],
+    ['המשך טיפול', data.nextSteps],
+  ]; %>
+  <% blocks.forEach(([title, items]) => { if (items?.length) { %>
+    <section class="section">
+      <h2><%= title %></h2>
+      <div class="body">
+        <ul class="timeline">
+          <% items.forEach((item) => { %><li><%= item %></li><% }) %>
+        </ul>
+      </div>
+    </section>
+  <% } }) %>
+
+  <% if (data.notes) { %>
+    <section class="section"><h2>הערות</h2><div class="body"><%= data.notes %></div></section>
+  <% } %>
+
+  <% if (optional.images?.length) { %>
+    <section class="section">
+      <h2>תמונות מהביקור</h2>
+      <div class="body block-grid">
+        <% optional.images.forEach((image, index) => { %>
+          <div class="photo-card">
+            <img src="<%= image.url %>" />
+            <p class="muted" style="margin-top:6px;"><%= image.description || `תמונה ${index + 1}` %></p>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+</body>
+</html>

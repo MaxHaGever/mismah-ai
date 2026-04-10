@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page {
+      margin: 22px 28px 28px 28px;
+    }
+
+    :root {
+      --ink: #122033;
+      --muted: #5f6b7d;
+      --line: #d6dde8;
+      --panel: #f7f9fc;
+      --panel-strong: #eef3f9;
+      --accent: #1d6f84;
+      --accent-2: #215ca8;
+      --accent-soft: #e3f2f6;
+      --highlight: #f2f8ff;
+      --success: #2f8f57;
+      --success-soft: #e7f6ec;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      direction: rtl;
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      color: var(--ink);
+      background: #ffffff;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 34px;
+    }
+
+    .document {
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .stamp {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--highlight);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 22px 18px;
+      background:
+        linear-gradient(180deg, rgba(241, 247, 252, 0.96), rgba(255, 255, 255, 0.98));
+      margin-bottom: 16px;
+    }
+
+    .hero-grid {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .hero-col {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .hero-col.main {
+      width: 62%;
+      padding-left: 12px;
+    }
+
+    .hero-col.side {
+      width: 38%;
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      max-height: 72px;
+      max-width: 180px;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .company-name {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.2;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .company-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .company-meta {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .company-meta li,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 6px 10px;
+      font-size: 10.5px;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .report-title {
+      margin: 18px 0 8px;
+      font-size: 26px;
+      line-height: 1.15;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .report-lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .meta-title {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .meta-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .meta-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid #edf2f7;
+      font-size: 11px;
+      break-inside: avoid;
+    }
+
+    .meta-label {
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .meta-value {
+      color: var(--ink);
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .section {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      break-inside: avoid;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: linear-gradient(90deg, var(--panel-strong), #ffffff);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .section-kicker {
+      margin: 0;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .section-body {
+      padding: 14px 16px 16px;
+    }
+
+    .details-grid {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+
+    .details-grid th,
+    .details-grid td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #edf1f6;
+      vertical-align: top;
+      text-align: right;
+      font-size: 11px;
+    }
+
+    .details-grid th {
+      width: 32%;
+      background: var(--panel);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .details-grid tr:last-child th,
+    .details-grid tr:last-child td {
+      border-bottom: none;
+    }
+
+    .text-block {
+      margin: 0;
+      color: var(--ink);
+      font-size: 12px;
+      white-space: pre-line;
+    }
+
+    .note-box {
+      border-right: 4px solid var(--accent);
+      background: #f8fbfe;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .checklist {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .checklist li {
+      position: relative;
+      padding: 9px 12px 9px 12px;
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid #edf2f7;
+      font-size: 11.5px;
+      color: var(--ink);
+      break-inside: avoid;
+    }
+
+    .checklist li::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .location-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      margin-bottom: 12px;
+      break-inside: avoid;
+    }
+
+    .location-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .location-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 11px;
+      margin-left: 8px;
+    }
+
+    .location-title {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .location-body {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+      gap: 12px;
+    }
+
+    .location-copy,
+    .location-image {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .location-copy {
+      width: 58%;
+      padding-left: 12px;
+    }
+
+    .location-image {
+      width: 42%;
+    }
+
+    .location-description {
+      margin: 0;
+      color: var(--ink);
+      font-size: 11.5px;
+      white-space: pre-line;
+    }
+
+    .image-frame {
+      border: 1px solid #dfe7f1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f5f8fc;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .leak-photo {
+      display: block;
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .caption {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 10.5px;
+      text-align: center;
+      white-space: pre-line;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 18px;
+      left: 28px;
+      right: 28px;
+      border-top: 1px solid var(--line);
+      padding-top: 6px;
+      color: var(--muted);
+      font-size: 9.5px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <%
+    const resolvedReportDate = resolveReportDate(data.reportDate);
+    const generatedOnDate = formatHebrewDate(header.date);
+    const testTools = data.testTools || data.testMethods || [];
+    const contactExperience = data.contactExprience || data.contactExperience || '';
+    const recommendations = data.recommendations || [];
+    const leakLocations = data.leakLocations || [];
+  %>
+
+  <div class="document">
+    <div class="top-bar">
+      <span class="stamp">בס״ד</span>
+      <span>הופק ב-<%= generatedOnDate %></span>
+    </div>
+
+    <div class="hero">
+      <div class="hero-grid">
+        <div class="hero-col main">
+          <div class="brand-row">
+            <% if (header.logoUrl) { %>
+              <img src="<%= header.logoUrl %>" class="logo" alt="לוגו החברה" />
+            <% } %>
+            <div class="brand-text">
+              <% if (data.companyName) { %>
+                <h2 class="company-name"><%= data.companyName %></h2>
+              <% } else { %>
+                <h2 class="company-name">דוח איתור נזילות</h2>
+              <% } %>
+              <p class="company-subtitle">מסמך מקצועי, נקי ומסודר להצגת ממצאי הבדיקה</p>
+            </div>
+          </div>
+
+          <h1 class="report-title">דוח איתור נזילות</h1>
+          <p class="report-lead">
+            סיכום מרוכז של ממצאי הבדיקה, נקודות החשד, כלי האיתור והמלצות ההמשך.
+          </p>
+
+          <ul class="company-meta">
+            <% if (data.propertyType) { %><li>סוג נכס: <%= data.propertyType %></li><% } %>
+            <% if (data.clientName) { %><li>לקוח: <%= data.clientName %></li><% } %>
+            <% if (data.propertyAddress) { %><li>כתובת: <%= data.propertyAddress %></li><% } %>
+          </ul>
+        </div>
+
+        <div class="hero-col side">
+          <div class="meta-card">
+            <p class="meta-title">פרטי הבדיקה</p>
+            <ul class="meta-list">
+              <li><span class="meta-label">תאריך בדיקה</span><span class="meta-value"><%= resolvedReportDate %></span></li>
+              <% if (data.performedBy) { %><li><span class="meta-label">מבצע הבדיקה</span><span class="meta-value"><%= data.performedBy %></span></li><% } %>
+              <% if (data.licenseNumber) { %><li><span class="meta-label">מספר רישיון</span><span class="meta-value"><%= data.licenseNumber %></span></li><% } %>
+              <% if (data.contactNumber) { %><li><span class="meta-label">טלפון ליצירת קשר</span><span class="meta-value"><%= data.contactNumber %></span></li><% } %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">פרטי הדו"ח</h2>
+      </div>
+      <div class="section-body">
+        <table class="details-grid">
+          <tbody>
+            <% if (data.reportDate) { %><tr><th>תאריך הדו"ח</th><td><%= resolvedReportDate %></td></tr><% } %>
+            <% if (data.propertyAddress) { %><tr><th>כתובת הנכס</th><td><%= data.propertyAddress %></td></tr><% } %>
+            <% if (data.clientName) { %><tr><th>לקוח</th><td><%= data.clientName %></td></tr><% } %>
+            <% if (data.performedBy) { %><tr><th>מבצע הבדיקה</th><td><%= data.performedBy %></td></tr><% } %>
+            <% if (data.licenseNumber) { %><tr><th>מספר רישיון</th><td><%= data.licenseNumber %></td></tr><% } %>
+            <% if (data.contactNumber) { %><tr><th>טלפון ליצירת קשר</th><td><%= data.contactNumber %></td></tr><% } %>
+            <% if (data.propertyType) { %><tr><th>סוג הנכס</th><td><%= data.propertyType %></td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">סקירה כללית</h2>
+      </div>
+      <div class="section-body">
+        <% if (data.overview) { %>
+          <div class="note-box"><%= data.overview %></div>
+        <% } else { %>
+          <p class="text-block muted">אין כרגע סיכום כללי למילוי.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (contactExperience) { %>
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">ניסיון מקצועי</h2>
+        </div>
+        <div class="section-body">
+          <p class="text-block"><%= contactExperience %></p>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (testTools.length) { %>
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">שיטות בדיקה</h2>
+        </div>
+        <div class="section-body">
+          <ul class="checklist">
+            <% testTools.forEach(tool => { %>
+              <li><%= tool %></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (leakLocations.length) { %>
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">מוקדי נזילות</h2>
+        </div>
+        <div class="section-body">
+          <% leakLocations.forEach((loc, idx) => { %>
+            <div class="location-card">
+              <div class="location-head">
+                <div style="display:flex; align-items:flex-start; gap:8px;">
+                  <span class="location-index"><%= idx + 1 %></span>
+                  <h3 class="location-title"><%= loc.location || `מוקד ${idx + 1}` %></h3>
+                </div>
+              </div>
+
+              <div class="location-body">
+                <div class="location-copy">
+                  <p class="location-description"><%= loc.description || 'אין תיאור נוסף.' %></p>
+                </div>
+                <div class="location-image">
+                  <% if (optional.images && optional.images[idx]) { %>
+                    <div class="image-frame">
+                      <img src="<%= optional.images[idx].url %>" class="leak-photo" alt="תמונת מוקד נזילה <%= idx + 1 %>" />
+                      <% if (optional.images[idx].description) { %>
+                        <p class="caption"><%= optional.images[idx].description %></p>
+                      <% } %>
+                    </div>
+                  <% } else { %>
+                    <div class="image-frame" style="padding:16px;">
+                      <p class="caption" style="margin:0;">לא צורפה תמונה עבור מוקד זה.</p>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (recommendations.length) { %>
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">המלצות להמשך טיפול</h2>
+        </div>
+        <div class="section-body">
+          <ul class="checklist">
+            <% recommendations.forEach(rec => { %>
+              <li><%= rec %></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (data.additionalNotes) { %>
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">הערות נוספות</h2>
+        </div>
+        <div class="section-body">
+          <p class="text-block"><%= data.additionalNotes %></p>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="footer">
+      דוח זה הופק אוטומטית לצרכי תיעוד והצגה מקצועית. <%= generatedOnDate %>
+    </div>
+  </div>
+</body>
+</html>

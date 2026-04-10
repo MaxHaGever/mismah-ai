@@ -1,0 +1,64 @@
+services:
+  db:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - dbdata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "5020"
+    volumes:
+      - uploads:/usr/src/app/uploads
+    environment:
+      - NODE_ENV=production
+      - PORT=5020
+      - MONGODB_URI=mongodb://db:27017/pdfdb
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"const http=require('http');const req=http.get('http://127.0.0.1:5020/api/health',(res)=>process.exit(res.statusCode===200?0:1));req.on('error',()=>process.exit(1));\"",
+        ]
+      interval: ${HEALTH_INTERVAL:-30s}
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/"]
+      interval: ${HEALTH_INTERVAL:-30s}
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  dbdata:
+  uploads:
