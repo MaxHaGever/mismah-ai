@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SparklesIcon } from "@heroicons/react/outline";
+import BrandMark from "./BrandMark";
 
 interface AuthFrameProps {
   title: string;
@@ -52,29 +53,31 @@ export default function AuthFrame({
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-4 pb-4 pt-6 sm:px-6 lg:px-8">
         <Link
           to={homeTo}
-          className={`flex items-center gap-3 rounded-full px-4 py-2 text-sm font-semibold transition ${
+          className={`transition ${
             isAppContext
-              ? "border border-slate-200 bg-white/85 text-slate-900 shadow-sm hover:border-cyan-300 hover:text-cyan-700"
-              : "border border-white/10 bg-white/5 text-white backdrop-blur hover:border-cyan-300/40 hover:bg-white/10"
+              ? "rounded-full border border-slate-200 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm hover:border-cyan-300 hover:text-cyan-700"
+              : "hover:-translate-y-0.5"
           }`}
         >
-          <span
-            className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
-              isAppContext ? "bg-cyan-100 text-cyan-700" : "bg-cyan-400/15 text-cyan-200"
-            }`}
-          >
-            <SparklesIcon className="h-4 w-4" />
-          </span>
-          <span>{isAppContext ? "חזרה למערכת" : "PDF AI"}</span>
-          {badge ? (
-            <span
-              className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
-                isAppContext ? "bg-slate-100 text-slate-600" : "bg-white/10 text-slate-200"
-              }`}
-            >
-              {badge}
-            </span>
-          ) : null}
+          {isAppContext ? (
+            <>
+              <span
+                className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
+                  isAppContext ? "bg-cyan-100 text-cyan-700" : "bg-cyan-400/15 text-cyan-200"
+                }`}
+              >
+                <SparklesIcon className="h-4 w-4" />
+              </span>
+              <span>חזרה למערכת</span>
+              {badge ? (
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                  {badge}
+                </span>
+              ) : null}
+            </>
+          ) : (
+            <BrandMark tone="auth" compact />
+          )}
         </Link>
 
         {isAppContext ? <div /> : (
