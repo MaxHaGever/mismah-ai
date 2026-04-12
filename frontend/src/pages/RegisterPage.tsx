@@ -43,14 +43,10 @@ export default function RegisterPage() {
     >
       <div className="space-y-5">
         <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-600">
-          <p className="font-semibold text-slate-900">יש כרגע 2 דרכים להיכנס למערכת:</p>
+          <p className="font-semibold text-slate-900">כרגע אפשר להצטרף למערכת בשתי דרכים בלבד:</p>
           <p>1. התחברות עם Google דרך הכפתור למטה.</p>
-          <p>2. שליחת כתובת האימייל אליי, כדי שאפתח משתמש ידנית ואשלח פרטי התחברות.</p>
-        </div>
-
-        <div className="rounded-3xl border border-amber-200 bg-amber-50/80 p-5 text-sm leading-7 text-amber-900">
-          <p className="font-semibold">אין כרגע פתיחת חשבון עצמאית עם אימייל וסיסמה.</p>
-          <p>אם אתה רוצה משתמש רגיל, שלח לי אימייל ואצור אותו ידנית עבורך.</p>
+          <p>2. פתיחת משתמש ידנית דרכי, לאחר שליחת אימייל לכתובת:</p>
+          <p className="font-semibold text-cyan-700" dir="ltr">maxspectorr@gmail.com</p>
         </div>
 
         <div className="space-y-3 pt-1">
@@ -58,9 +54,6 @@ export default function RegisterPage() {
             <div className="h-px flex-1 bg-slate-200" />
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">או</span>
             <div className="h-px flex-1 bg-slate-200" />
-          </div>
-          <div className="space-y-1 text-center">
-            <p className="text-sm font-medium text-slate-700">כניסה או יצירת משתמש עם Google</p>
           </div>
           <div className="flex justify-center">
             <GoogleLoginButton onCredential={handleGoogleLogin} />

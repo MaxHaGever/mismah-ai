@@ -134,9 +134,6 @@ export default function LoginPage() {
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">או</span>
             <div className="h-px flex-1 bg-slate-200" />
           </div>
-          <div className="space-y-1 text-center">
-            <p className="text-sm font-medium text-slate-700">התחברות מהירה עם Google</p>
-          </div>
           <div className="flex justify-center">
             <GoogleLoginButton onCredential={handleGoogleLogin} />
           </div>
