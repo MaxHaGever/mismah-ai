@@ -10,6 +10,23 @@ import { buildLeakDetectionPrompt } from '../utils/leakPromptGuidance';
 import path from 'path';
 import fs from 'fs';
 
+function parseAiJsonResponse(aiRaw: string) {
+  const trimmed = aiRaw.trim();
+  const withoutFences = trimmed
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/, '')
+    .trim();
+  const firstBrace = withoutFences.indexOf('{');
+  const lastBrace = withoutFences.lastIndexOf('}');
+
+  const jsonCandidate =
+    firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace
+      ? withoutFences.slice(firstBrace, lastBrace + 1)
+      : withoutFences;
+
+  return JSON.parse(jsonCandidate);
+}
+
 function getMonthlyUsageWindow() {
   const now = new Date();
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0));
@@ -111,7 +128,7 @@ async function makeGenericBusinessPdfUsingAi({
       : '';
 
     const aiRaw = await generateDocFromPrompt(`${prompt}${imageGuidance}`, systemPrompts[promptKey]);
-    const aiResponse = JSON.parse(aiRaw);
+    const aiResponse = parseAiJsonResponse(aiRaw);
     const aiData: Record<string, any> = aiResponse.data ?? aiResponse;
     const { data, logoSrc } = await buildBusinessDocumentData(user, aiData);
 
@@ -201,7 +218,7 @@ export const makeInvoiceDemandPdfUsingAi = async (
       prompt,
       systemPrompts.invoiceDemand
     );
-    const aiResponse = JSON.parse(aiRaw);
+    const aiResponse = parseAiJsonResponse(aiRaw);
     const aiData: Record<string, any> = aiResponse.data ?? aiResponse;
 
     const data = {
@@ -287,7 +304,7 @@ export const makeLeakDetectionPdfUsingAi = async (
       guidedPrompt,
       systemPrompts.leakDetection
     );
-    const aiResponse = JSON.parse(aiRaw);
+    const aiResponse = parseAiJsonResponse(aiRaw);
     const aiData: Record<string, any> = aiResponse.data ?? aiResponse;
 
     const data = {
