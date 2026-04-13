@@ -413,6 +413,27 @@
       white-space: pre-line;
     }
 
+    .extra-images-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .extra-image-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 10px;
+      break-inside: avoid;
+    }
+
+    .extra-image-title {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
     .footer {
       position: fixed;
       bottom: 18px;
@@ -439,6 +460,8 @@
     const contactExperience = data.contactExprience || data.contactExperience || '';
     const recommendations = data.recommendations || [];
     const leakLocations = data.leakLocations || [];
+    const uploadedImages = Array.isArray(optional.images) ? optional.images : [];
+    const extraImages = uploadedImages.slice(leakLocations.length);
   %>
 
   <div class="document">
@@ -599,6 +622,29 @@
               <li><%= rec %></li>
             <% }) %>
           </ul>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (extraImages.length) { %>
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">תמונות נוספות מהבדיקה</h2>
+        </div>
+        <div class="section-body">
+          <div class="extra-images-grid">
+            <% extraImages.forEach((img, idx) => { %>
+              <div class="extra-image-card">
+                <h3 class="extra-image-title">תמונה <%= leakLocations.length + idx + 1 %></h3>
+                <div class="image-frame">
+                  <img src="<%= img.url %>" class="leak-photo" alt="תמונה נוספת <%= leakLocations.length + idx + 1 %>" />
+                  <% if (img.description) { %>
+                    <p class="caption"><%= img.description %></p>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
         </div>
       </div>
     <% } %>
