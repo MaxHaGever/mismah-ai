@@ -42,3 +42,32 @@ body {
     radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 34%),
     radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.08), transparent 32%);
 }
+
+.rounded-\[2rem\] {
+  border-radius: 0.85rem !important;
+}
+
+.rounded-\[1\.75rem\] {
+  border-radius: 0.8rem !important;
+}
+
+.rounded-\[1\.5rem\] {
+  border-radius: 0.75rem !important;
+}
+
+.rounded-3xl {
+  border-radius: 0.8rem !important;
+}
+
+.rounded-2xl {
+  border-radius: 0.7rem !important;
+}
+
+.rounded-xl {
+  border-radius: 0.65rem !important;
+}
+
+.rounded-lg,
+.rounded-md {
+  border-radius: 0.55rem !important;
+}

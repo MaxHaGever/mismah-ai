@@ -3,7 +3,6 @@ import { useAuth } from "../hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import axios from "../lib/axios";
 import {
-  ClipboardCheckIcon,
   TrashIcon,
   DocumentSearchIcon,
 } from "@heroicons/react/outline";
@@ -31,7 +30,7 @@ interface ReportLog {
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || "";
+  const staticBaseUrl = import.meta.env.VITE_STATIC_URL?.replace(/\/+$/, "") || "";
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [reports, setReports] = useState<ReportLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,15 +62,6 @@ export default function AdminDashboard() {
       setReports(res.data.reports || []);
     } catch {
       alert("שגיאה בטעינת הדוחות");
-    }
-  };
-
-  const promote = async (id: string) => {
-    try {
-      await axios.patch(`/admin/users/${id}/promote`);
-      fetchUsers();
-    } catch {
-      alert("שגיאה בקידום משתמש");
     }
   };
 
@@ -126,6 +116,9 @@ export default function AdminDashboard() {
     <div className="min-h-screen px-6 py-10 bg-gray-100 dark:bg-slate-900" dir="rtl">
       <div className="max-w-5xl mx-auto bg-white dark:bg-slate-800 p-6 rounded shadow space-y-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">לוח ניהול</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-300">
+          חשבון האדמין היחיד במערכת הוא {user.email}.
+        </p>
 
         {/* Invite User */}
         <div className="flex gap-3 items-center">
@@ -196,15 +189,6 @@ export default function AdminDashboard() {
                     </div>
                   </td>
                   <td className="p-2 border flex gap-2 justify-end">
-                    {!u.isAdmin && (
-                      <button
-                        onClick={() => promote(u._id)}
-                        title="קדם לאדמין"
-                        className="text-green-600 hover:underline text-xs"
-                      >
-                        <ClipboardCheckIcon className="h-4 w-4 inline" /> אדמין
-                      </button>
-                    )}
                     <button
                       onClick={() => remove(u._id)}
                       title="מחק"
@@ -255,7 +239,7 @@ export default function AdminDashboard() {
                       <td className="p-2 border">
                         {log.pdfUrl ? (
 <a
-  href={`${apiBaseUrl}/${log.pdfUrl.replace(/^\/+/, "")}`}
+  href={log.pdfUrl.startsWith("http") ? log.pdfUrl : `${staticBaseUrl}/${log.pdfUrl.replace(/^\/+/, "")}`}
   target="_blank"
   rel="noopener noreferrer"
   className="text-blue-600 hover:underline"

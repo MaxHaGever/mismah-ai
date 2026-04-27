@@ -7,6 +7,7 @@ import { AuthenticateRequest } from '../middleware/authMiddleware';
 import { error } from 'console';
 import { sendEmail } from '../utils/mailer'
 import { generateResetToken, verifyResetToken } from '../utils/generateResetToken';
+import { isAdminEmail } from '../utils/adminAccess';
 
 function serializeUser(user: any) {
   return {
@@ -21,24 +22,15 @@ function serializeUser(user: any) {
     companyWebsite: user.companyWebsite,
     companyId: user.companyId,
     monthlyDocumentLimit: user.monthlyDocumentLimit ?? 5,
-    isAdmin: !!user.isAdmin,
+    isAdmin: isAdminEmail(user.email),
     hasChangedPassword: user.hasChangedPassword,
     hasAcceptedTerms: user.hasAcceptedTerms,
     authProvider: user.authProvider || 'local',
   };
 }
 
-function shouldGrantAdminOnRegister(email: string, existingUserCount: number): boolean {
-  if (existingUserCount === 0) {
-    return true;
-  }
-
-  const adminEmails = (process.env.ADMIN_EMAILS || '')
-    .split(',')
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean);
-
-  return adminEmails.includes(email.trim().toLowerCase());
+function shouldGrantAdminOnRegister(email: string): boolean {
+  return isAdminEmail(email);
 }
 
 export const register = async (
@@ -53,11 +45,10 @@ export const register = async (
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    const existingUserCount = await User.countDocuments();
     const newUser = new User({
       email,
       password,
-      isAdmin: shouldGrantAdminOnRegister(email, existingUserCount),
+      isAdmin: shouldGrantAdminOnRegister(email),
     });
     await newUser.save();
 
@@ -142,13 +133,12 @@ export const loginWithGoogle = async (req: Request, res: Response, next: NextFun
       }
 
       if (!user) {
-        const existingUserCount = await User.countDocuments();
         user = new User({
           email,
           password: crypto.randomBytes(24).toString('hex'),
           authProvider: 'google',
           googleId,
-          isAdmin: shouldGrantAdminOnRegister(email, existingUserCount),
+          isAdmin: shouldGrantAdminOnRegister(email),
           hasChangedPassword: true,
         });
         await user.save();

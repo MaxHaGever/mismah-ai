@@ -4,6 +4,7 @@ import { sendEmail } from "../utils/mailer";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { ReportLog } from "../models/reportLog";
+import { isAdminEmail } from "../utils/adminAccess";
 
 function getMonthlyUsageWindow() {
   const now = new Date();
@@ -39,6 +40,7 @@ export const getAllUsers = async (_req: Request, res: Response) => {
       const monthlyDocumentLimit = user.monthlyDocumentLimit ?? 5;
       return {
         ...user,
+        isAdmin: isAdminEmail(user.email),
         usedThisMonth,
         documentsLeft: Math.max(monthlyDocumentLimit - usedThisMonth, 0),
       };
@@ -51,20 +53,7 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 };
 
 export const promoteToAdmin = async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  try {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { isAdmin: true },
-      { new: true }
-    );
-
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    res.json({ message: "User promoted to admin", user });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to promote user" });
-  }
+  return res.status(403).json({ error: "Admin access is restricted to configured owner accounts only." });
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
