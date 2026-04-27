@@ -15,18 +15,21 @@ const documents = [
     description: "דוח מקצועי עם מוקדי נזילה, כלי בדיקה, המלצות ותמונות.",
     to: "/dashboard",
     accent: "from-cyan-500 to-emerald-400",
+    available: true,
   },
   {
     title: "הצעת מחיר",
     description: "מסמך הצעה ללקוח עם תיאור עבודה, פירוט פריטים, מחיר ותנאים.",
     to: "/documents/price-quote",
     accent: "from-amber-400 to-orange-500",
+    available: false,
   },
   {
     title: "סיכום ביקור טכנאי",
     description: "סיכום שירות קצר ומסודר עם ממצאים, עבודה שבוצעה והמשך טיפול.",
     to: "/documents/service-visit",
     accent: "from-slate-700 to-cyan-600",
+    available: false,
   },
 ];
 
@@ -103,16 +106,21 @@ export default function DocumentMenuPage() {
               <button
                 key={doc.to}
                 type="button"
-                onClick={() => navigate(doc.to)}
-                className="group rounded-[1.75rem] border border-slate-200 bg-white p-5 text-right shadow-sm transition hover:-translate-y-1 hover:border-cyan-200 hover:shadow-xl"
+                onClick={() => doc.available && navigate(doc.to)}
+                disabled={!doc.available}
+                className={`group rounded-[1.75rem] border p-5 text-right shadow-sm transition ${
+                  doc.available
+                    ? "border-slate-200 bg-white hover:-translate-y-1 hover:border-cyan-200 hover:shadow-xl"
+                    : "cursor-not-allowed border-slate-200/80 bg-slate-100/90 opacity-65"
+                }`}
               >
                 <span className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${doc.accent} text-white`}>
                   {doc.to === "/dashboard" ? <DocumentTextIcon className="h-6 w-6" /> : <ClipboardListIcon className="h-6 w-6" />}
                 </span>
                 <h3 className="text-lg font-bold text-slate-950">{doc.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{doc.description}</p>
-                <p className="mt-5 text-sm font-semibold text-cyan-700 transition group-hover:text-cyan-900">
-                  פתח מסמך
+                <p className={`mt-5 text-sm font-semibold transition ${doc.available ? "text-cyan-700 group-hover:text-cyan-900" : "text-slate-500"}`}>
+                  {doc.available ? "פתח מסמך" : "זמין בהמשך"}
                 </p>
               </button>
             ))}

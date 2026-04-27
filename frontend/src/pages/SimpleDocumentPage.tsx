@@ -33,6 +33,7 @@ const MAX_IMAGES = 5;
 const documentConfig = {
   "price-quote": {
     title: "הצעת מחיר",
+    available: false,
     endpoint: "/ai/price-quote",
     helper: "כתוב למי ההצעה, מה העבודה, מחיר, תוקף ההצעה ותנאי תשלום.",
     placeholder:
@@ -54,6 +55,7 @@ const documentConfig = {
   },
   "service-visit": {
     title: "סיכום ביקור טכנאי",
+    available: false,
     endpoint: "/ai/service-visit",
     helper: "כתוב מה קרה בביקור, מה נמצא, מה בוצע ומה מומלץ להמשך.",
     placeholder:
@@ -122,6 +124,35 @@ export default function SimpleDocumentPage() {
 
   if (!config) {
     return null;
+  }
+
+  if (!config.available) {
+    return (
+      <div
+        dir="rtl"
+        className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.14),_transparent_24%),radial-gradient(circle_at_bottom_left,_rgba(245,158,11,0.12),_transparent_28%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto flex min-h-[80vh] max-w-3xl flex-col justify-center gap-6">
+          <section className="rounded-[2rem] border border-slate-200/70 bg-white/90 p-8 text-center shadow-[0_24px_70px_-40px_rgba(15,23,42,0.3)]">
+            <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 text-slate-500">
+              <ClipboardListIcon className="h-7 w-7" />
+            </span>
+            <h1 className="mt-5 text-2xl font-bold text-slate-950">{config.title}</h1>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              המסמך הזה עדיין לא פתוח ללקוחות. כרגע אפשר ליצור רק דוח איתור נזילות.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/documents')}
+              className="mt-6 inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-cyan-300 hover:text-cyan-700"
+            >
+              חזור לבחירת מסמך
+            </button>
+          </section>
+          <SiteFooter tone="app" />
+        </div>
+      </div>
+    );
   }
 
   const handleLogout = () => {
