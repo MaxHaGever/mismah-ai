@@ -15,6 +15,7 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/outline";
 import { useAuth } from "../hooks/useAuth";
+import SiteFooter from "../components/SiteFooter";
 
 interface UploadedImageResponse {
   url: string;
@@ -437,6 +438,7 @@ export default function SimpleDocumentPage() {
             </section>
           </aside>
         </div>
+        <SiteFooter tone="app" />
       </div>
     </div>
   );

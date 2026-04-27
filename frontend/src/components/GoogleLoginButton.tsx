@@ -26,10 +26,16 @@ interface GoogleLoginButtonProps {
 
 export default function GoogleLoginButton({ onCredential }: GoogleLoginButtonProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const onCredentialRef = useRef(onCredential);
+  const initializedClientIdRef = useRef<string | null>(null);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [status, setStatus] = useState<"loading" | "ready" | "missing">(
     clientId ? "loading" : "missing"
   );
+
+  useEffect(() => {
+    onCredentialRef.current = onCredential;
+  }, [onCredential]);
 
   useEffect(() => {
     if (!clientId) {
@@ -48,15 +54,18 @@ export default function GoogleLoginButton({ onCredential }: GoogleLoginButtonPro
       }
 
       containerRef.current.innerHTML = "";
-      googleAccounts.initialize({
-        client_id: clientId,
-        callback: (response) => {
-          if (response.credential) {
-            onCredential(response.credential);
-          }
-        },
-        ux_mode: "popup",
-      });
+      if (initializedClientIdRef.current !== clientId) {
+        googleAccounts.initialize({
+          client_id: clientId,
+          callback: (response) => {
+            if (response.credential) {
+              onCredentialRef.current(response.credential);
+            }
+          },
+          ux_mode: "popup",
+        });
+        initializedClientIdRef.current = clientId;
+      }
 
       googleAccounts.renderButton(containerRef.current, {
         theme: "outline",
@@ -90,7 +99,7 @@ export default function GoogleLoginButton({ onCredential }: GoogleLoginButtonPro
         window.clearInterval(intervalId);
       }
     };
-  }, [clientId, onCredential]);
+  }, [clientId]);
 
   if (!clientId) {
     return (

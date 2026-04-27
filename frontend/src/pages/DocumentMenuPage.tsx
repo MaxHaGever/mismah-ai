@@ -7,6 +7,7 @@ import {
   OfficeBuildingIcon,
   SparklesIcon,
 } from "@heroicons/react/outline";
+import SiteFooter from "../components/SiteFooter";
 
 const documents = [
   {
@@ -118,6 +119,7 @@ export default function DocumentMenuPage() {
           </div>
         </section>
       </div>
+      <SiteFooter tone="app" />
     </div>
   );
 }

@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../lib/axios';
 import { useAuth } from '../hooks/useAuth';
-import { detectLeakKeywords, keywordGroups } from '../lib/leakKeywords';
+import { detectLeakKeywords, keywordGroups, type LeakStructuredDetails } from '../lib/leakKeywords';
 import { isAxiosError } from 'axios';
 import {
   CheckCircleIcon,
@@ -16,6 +16,7 @@ import {
   TrashIcon,
   UserCircleIcon,
 } from '@heroicons/react/outline';
+import SiteFooter from '../components/SiteFooter';
 
 interface UploadedImageResponse {
   url: string;
@@ -30,15 +31,56 @@ interface ImageDraft {
 
 const MAX_IMAGES = 5;
 
+function getTodayIso() {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jerusalem',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
+  const parts = formatter.formatToParts(new Date());
+  const year = parts.find((part) => part.type === 'year')?.value ?? '0000';
+  const month = parts.find((part) => part.type === 'month')?.value ?? '01';
+  const day = parts.find((part) => part.type === 'day')?.value ?? '01';
+
+  return `${year}-${month}-${day}`;
+}
+
+function createInitialLeakDetails(user?: { companyPhone?: string } | null): LeakStructuredDetails {
+  return {
+    reportNumber: '',
+    reportDate: getTodayIso(),
+    clientName: '',
+    propertyAddress: '',
+    apartmentNumber: '',
+    floor: '',
+    propertyType: '',
+    performedBy: '',
+    licenseNumber: '',
+    contactNumber: user?.companyPhone || '',
+    contactExperience: '',
+  };
+}
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [prompt, setPrompt] = useState('');
+  const [details, setDetails] = useState<LeakStructuredDetails>(() => createInitialLeakDetails(user));
   const [images, setImages] = useState<ImageDraft[]>([]);
   const [loading, setLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDetails((prev) => ({
+      ...prev,
+      reportDate: prev.reportDate || getTodayIso(),
+      contactNumber: prev.contactNumber || user?.companyPhone || '',
+    }));
+  }, [user?.companyPhone]);
 
   const staticBaseUrl = import.meta.env.VITE_STATIC_URL?.replace(/\/+$/, '') || '';
   const logoSrc = user?.companyLogo
@@ -47,7 +89,7 @@ export default function Dashboard() {
       : `${staticBaseUrl}/${user.companyLogo.replace(/^\/+/, '')}`
     : null;
 
-  const detection = useMemo(() => detectLeakKeywords(prompt), [prompt]);
+  const detection = useMemo(() => detectLeakKeywords(prompt, details), [details, prompt]);
   const allKeywords = Object.values(keywordGroups).flat();
   const matchedKeywords = allKeywords.filter((keyword) => detection.matched.has(keyword));
   const missingKeywords = allKeywords.filter((keyword) => !detection.matched.has(keyword));
@@ -99,6 +141,10 @@ export default function Dashboard() {
     setImages((prev) => prev.map((img, i) => (i === index ? { ...img, description } : img)));
   };
 
+  const handleDetailChange = (field: keyof LeakStructuredDetails, value: string) => {
+    setDetails((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleRemove = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
@@ -126,7 +172,7 @@ export default function Dashboard() {
 
       const pdfRes = await axios.post(
         '/ai/leak-detection',
-        { prompt, images: uploadedImages },
+        { prompt, images: uploadedImages, details },
         { responseType: 'blob' }
       );
 
@@ -222,15 +268,144 @@ export default function Dashboard() {
           >
             <div className="grid gap-6">
               <section className="grid gap-5 rounded-[1.75rem] border border-slate-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_38%,#f0fdfa_100%)] p-5">
+                <div className="grid gap-4 rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="sm:col-span-2 xl:col-span-3">
+                    <h2 className="text-lg font-bold text-slate-950">פרטי הדוח שיופיעו במסמך</h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">
+                      החלק הזה מחליף ניחושים. הפרטים כאן ייכנסו ישירות ל-PDF גם אם הטקסט החופשי מנוסח אחרת.
+                    </p>
+                  </div>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">מספר דו"ח</span>
+                    <input
+                      type="text"
+                      value={details.reportNumber || ''}
+                      onChange={(e) => handleDetailChange('reportNumber', e.target.value)}
+                      placeholder="לדוגמה: LD-2026-014"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">תאריך בדיקה</span>
+                    <input
+                      type="date"
+                      value={details.reportDate || ''}
+                      onChange={(e) => handleDetailChange('reportDate', e.target.value)}
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">שם הלקוח</span>
+                    <input
+                      type="text"
+                      value={details.clientName || ''}
+                      onChange={(e) => handleDetailChange('clientName', e.target.value)}
+                      placeholder="יואב כהן"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2 sm:col-span-2">
+                    <span className="text-sm font-semibold text-slate-700">כתובת הנכס</span>
+                    <input
+                      type="text"
+                      value={details.propertyAddress || ''}
+                      onChange={(e) => handleDetailChange('propertyAddress', e.target.value)}
+                      placeholder="רחוב הגפן 12, חיפה"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">מספר דירה</span>
+                    <input
+                      type="text"
+                      value={details.apartmentNumber || ''}
+                      onChange={(e) => handleDetailChange('apartmentNumber', e.target.value)}
+                      placeholder="4"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">קומה</span>
+                    <input
+                      type="text"
+                      value={details.floor || ''}
+                      onChange={(e) => handleDetailChange('floor', e.target.value)}
+                      placeholder="קומה 3 / קרקע"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">סוג הנכס</span>
+                    <input
+                      type="text"
+                      value={details.propertyType || ''}
+                      onChange={(e) => handleDetailChange('propertyType', e.target.value)}
+                      placeholder="דירת מגורים / משרד / בית פרטי"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">מבצע הבדיקה</span>
+                    <input
+                      type="text"
+                      value={details.performedBy || ''}
+                      onChange={(e) => handleDetailChange('performedBy', e.target.value)}
+                      placeholder="דוד לוי"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">מספר רישיון / הסמכה</span>
+                    <input
+                      type="text"
+                      value={details.licenseNumber || ''}
+                      onChange={(e) => handleDetailChange('licenseNumber', e.target.value)}
+                      placeholder="12345"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-slate-700">טלפון ליצירת קשר</span>
+                    <input
+                      type="text"
+                      value={details.contactNumber || ''}
+                      onChange={(e) => handleDetailChange('contactNumber', e.target.value)}
+                      placeholder="050-1234567"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+
+                  <label className="grid gap-2 sm:col-span-2 xl:col-span-3">
+                    <span className="text-sm font-semibold text-slate-700">ניסיון מקצועי / השכלת הבודק</span>
+                    <textarea
+                      value={details.contactExperience || ''}
+                      onChange={(e) => handleDetailChange('contactExperience', e.target.value)}
+                      placeholder="לדוגמה: הנדסאי בניין עם 12 שנות ניסיון באיתור נזילות והכשרה במצלמות תרמיות."
+                      rows={3}
+                      className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    />
+                  </label>
+                </div>
+
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="space-y-2">
                     <div className="inline-flex rounded-full border border-cyan-100 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-700">
-                      כתיבה חופשית + זיהוי רמזים
+                      כתיבה חופשית + השלמה חכמה
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-slate-950">כתוב את תיאור הבדיקה</h2>
+                      <h2 className="text-lg font-bold text-slate-950">כתוב את תיאור הבדיקה והממצאים</h2>
                       <p className="text-sm leading-6 text-slate-600">
-                        כתוב טבעי. המערכת תזהה לבד את מה שחשוב ותציג כמה שדות עוד חסרים.
+                        כאן אפשר לכתוב טבעי כמו בשטח. ה-AI ישתמש בטקסט הזה בשביל הרקע, הממצאים, מקור התקלה וההמלצות.
                       </p>
                     </div>
                   </div>
@@ -249,7 +424,7 @@ export default function Dashboard() {
                   <textarea
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="לדוגמה: הנזילה הייתה במרפסת השירות, זוהתה רטיבות בקיר הצפוני והבדיקה בוצעה עם מצלמה תרמית ומד לחות..."
+                    placeholder="לדוגמה: במהלך הבדיקה נמצאה רטיבות בקיר הצפוני של המרפסת, בוצעה סריקה עם מצלמה תרמית ומד לחות, ובחדר הרחצה זוהה טפטוף פעיל מתחת לכיור. להערכתי מקור התקלה קשור לכשל איטום במרפסת בשילוב נזילה מקומית בצנרת..."
                     rows={9}
                     className="w-full rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 pr-12 text-sm leading-7 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                   />
@@ -439,6 +614,7 @@ export default function Dashboard() {
             </section>
           </aside>
         </div>
+        <SiteFooter tone="app" />
       </div>
     </div>
   );

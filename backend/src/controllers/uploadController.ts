@@ -6,6 +6,7 @@ import { User } from '../models/User';
 import { AuthenticateRequest } from '../middleware/authMiddleware';
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+const maxUploadSize = 5 * 1024 * 1024;
 
 const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (allowedTypes.includes(file.mimetype)) {
@@ -29,7 +30,11 @@ const storage = multer.diskStorage({
   }
 });
 
-export const upload = multer({ storage, fileFilter });
+export const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: maxUploadSize },
+});
 
 export const uploadLogo = async (req: AuthenticateRequest, res: Response) => {
   if (!req.file) {

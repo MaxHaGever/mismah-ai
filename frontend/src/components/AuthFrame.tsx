@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SparklesIcon } from "@heroicons/react/outline";
 import BrandMark from "./BrandMark";
+import SiteFooter from "./SiteFooter";
 
 interface AuthFrameProps {
   title: string;
@@ -150,6 +151,8 @@ export default function AuthFrame({
           </div>
         </section>
       </main>
+
+      <SiteFooter tone={isAppContext ? "app" : "auth"} />
     </div>
   );
 }

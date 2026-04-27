@@ -30,7 +30,16 @@ export default function ProfileSetupPage() {
   }
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLogoFile(e.target.files?.[0] || null);
+    const nextFile = e.target.files?.[0] || null;
+    if (nextFile && nextFile.size > 5 * 1024 * 1024) {
+      setLogoFile(null);
+      setError("קובץ הלוגו גדול מדי. אפשר להעלות קבצים עד 5MB.");
+      e.target.value = "";
+      return;
+    }
+
+    setError(null);
+    setLogoFile(nextFile);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,7 +75,11 @@ export default function ProfileSetupPage() {
       updateUser(profileRes.data.user);
       navigate(isEditingExistingProfile ? "/dashboard" : "/documents");
     } catch (err: unknown) {
-      setError(isApiError(err) ? err.response!.data.error : "שגיאה בעדכון הפרופיל");
+      if (isAxiosError(err) && err.response?.status === 413) {
+        setError("קובץ הלוגו גדול מדי. אפשר להעלות קבצים עד 5MB.");
+      } else {
+        setError(isApiError(err) ? err.response!.data.error : "שגיאה בעדכון הפרופיל");
+      }
       console.error("Profile update error:", err);
     }
   };
@@ -127,10 +140,11 @@ export default function ProfileSetupPage() {
             </label>
             <input
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/webp"
               onChange={handleLogoChange}
               className="w-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-slate-950 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-800"
             />
+            <p className="text-xs text-slate-500">PNG, JPG או WEBP עד 5MB.</p>
           </div>
 
           <button

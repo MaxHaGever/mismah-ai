@@ -44,30 +44,34 @@ body {
 }
 
 .rounded-\[2rem\] {
-  border-radius: 0.85rem !important;
+  border-radius: 0.55rem !important;
 }
 
 .rounded-\[1\.75rem\] {
-  border-radius: 0.8rem !important;
+  border-radius: 0.5rem !important;
 }
 
 .rounded-\[1\.5rem\] {
-  border-radius: 0.75rem !important;
+  border-radius: 0.45rem !important;
 }
 
 .rounded-3xl {
-  border-radius: 0.8rem !important;
+  border-radius: 0.55rem !important;
 }
 
 .rounded-2xl {
-  border-radius: 0.7rem !important;
+  border-radius: 0.45rem !important;
 }
 
 .rounded-xl {
-  border-radius: 0.65rem !important;
+  border-radius: 0.4rem !important;
 }
 
 .rounded-lg,
 .rounded-md {
-  border-radius: 0.55rem !important;
+  border-radius: 0.35rem !important;
+}
+
+.rounded-full {
+  border-radius: 0.45rem !important;
 }
